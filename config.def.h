@@ -19,7 +19,10 @@ static const char * text_color = "yellow";
 
 /* text size (must be a valid size: slock -f) */
 /* static const char * font_name = "-misc-dejavu sans mono-bold-r-normal--0-0-0-0-m-0-iso8859-16"; */
-static const char * font_name = "-misc-dejavu sans condensed-medium-o-semicondensed-*-36-*-*-*-*-*-*-1";
+static const char * font_name = "-misc-dejavu sans condensed-medium-o-semicondensed-*-24-*-*-*-*-*-*-1";
+
+/* transparency: 0.0 (opaque) to 1.0 (fully transparent) */
+static const float alpha = 0.88;
 
 /* slock -f */
 /* -arphic-ar pl new kai extb-medium-r-normal--0-0-0-0-p-0-iso10646-1 */

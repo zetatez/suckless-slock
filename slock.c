@@ -17,6 +17,7 @@
 #include <crypt.h>
 #include <X11/extensions/Xrandr.h>
 #include <X11/extensions/Xinerama.h>
+#include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -354,9 +355,9 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 		lock->colors[i] = color.pixel;
 	}
 
-	/* init */
 	wa.override_redirect = 1;
 	wa.background_pixel = lock->colors[INIT];
+
 	lock->win = XCreateWindow(dpy, lock->root, 0, 0,
 	                          DisplayWidth(dpy, lock->screen),
 	                          DisplayHeight(dpy, lock->screen),
@@ -389,6 +390,14 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 				XRRSelectInput(dpy, lock->win, RRScreenChangeNotifyMask);
 
 			XSelectInput(dpy, lock->root, SubstructureNotifyMask);
+
+			if (alpha < 1.0) {
+				Atom opacity = XInternAtom(dpy, "_NET_WM_WINDOW_OPACITY", False);
+				unsigned long opacity_value = (unsigned long)(0xFFFFFFFFUL * alpha);
+				XChangeProperty(dpy, lock->win, opacity, XA_CARDINAL, 32,
+				                PropModeReplace, (unsigned char *)&opacity_value, 1);
+			}
+
 			return lock;
 		}
 
