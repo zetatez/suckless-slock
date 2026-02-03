@@ -14,6 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <crypt.h>
 #include <X11/extensions/Xrandr.h>
 #include <X11/extensions/Xinerama.h>
 #include <X11/keysym.h>
@@ -98,6 +99,18 @@ writemessage(Display *dpy, Window win, int screen)
 	GC gc;
 	fontinfo = XLoadQueryFont(dpy, font_name);
 
+	if (fontinfo == NULL) {
+		fontinfo = XLoadQueryFont(dpy, "-*-dejavu sans condensed-medium-*-*-*-24-*-*-*-*-*-*-1");
+	}
+	if (fontinfo == NULL) {
+		fontinfo = XLoadQueryFont(dpy, "-*-dejavu sans-medium-*-*-*-24-*-*-*-*-*-*-1");
+	}
+	if (fontinfo == NULL) {
+		fontinfo = XLoadQueryFont(dpy, "-*-dejavu-*-*-*-*-*-*-24-*-*-*-*-*-*-1");
+	}
+	if (fontinfo == NULL) {
+		fontinfo = XLoadQueryFont(dpy, "*");
+	}
 	if (fontinfo == NULL) {
 		if (count_error == 0) {
 			fprintf(stderr, "slock: Unable to load font \"%s\"\n", font_name);
@@ -306,12 +319,15 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 						XResizeWindow(dpy, locks[screen]->win,
 						              rre->width, rre->height);
 					XClearWindow(dpy, locks[screen]->win);
+					writemessage(dpy, locks[screen]->win, screen);
 					break;
 				}
 			}
 		} else {
-			for (screen = 0; screen < nscreens; screen++)
+			for (screen = 0; screen < nscreens; screen++) {
 				XRaiseWindow(dpy, locks[screen]->win);
+				writemessage(dpy, locks[screen]->win, screen);
+			}
 		}
 	}
 }
